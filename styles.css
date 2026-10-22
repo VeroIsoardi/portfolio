@@ -1,0 +1,166 @@
+/* Frontend / Backend modes. Frontend is the light editorial page; backend
+   is a green-on-black terminal: dashed rules, square corners, mono type
+   throughout and an amber accent. The About and Stack sections are dark in
+   both modes; their colours are the --d-* set. */
+:root,html[data-mode=frontend]{
+  --accent:oklch(0.72 0.13 214);--hov:oklch(0.55 0.12 214);
+  --ink:#15150f;--muted:#4a4f45;--faint:#6e6e64;--line:rgba(21,21,15,.12);--ls:solid;
+  --card:#fff;--paper:#fbfbf9;--paper-2:#f4f2ed;--deep:#0d0d10;--tile:#15150f;
+  --hatch-a:color-mix(in oklch,var(--accent) 30%,transparent);--hatch-b:color-mix(in oklch,var(--accent) 9%,transparent);
+  --header-bg:rgba(251,251,249,.82);--ring:rgba(21,21,15,.35);--ring-fill:rgba(21,21,15,.06);
+  --d-ink:#f4f3ee;--d-ink2:#d4d2ca;--d-ink3:#a0a0aa;--d-ink4:#8b8b95;--d-mute:#85858f;
+  --d-line:#23232a;--d-line2:#2b2b34;--d-dot:#3a3a44;--dot-idle:rgba(160,172,186,.16);
+  --r:8px;--pill:99px;--ringr:50%;--grid:none;
+  --sans:'Bricolage Grotesque',system-ui;--mono:'Bricolage Grotesque',system-ui;--display:Newsreader,Georgia,serif;--display-style:italic;--ds:1;
+  --h1:clamp(44px,6.6vw,96px);
+  color-scheme:light
+}
+html[data-mode=backend]{
+  --accent:oklch(0.82 0.15 75);--hov:oklch(0.82 0.15 75);
+  --ink:#b8f5b4;--muted:#86c886;--faint:#5f9461;--line:rgba(140,255,150,.2);--ls:dashed;
+  --card:#0b100b;--paper:#060806;--paper-2:#0a0d0a;--deep:#000;--tile:#000;
+  --hatch-a:rgba(140,255,150,.09);--hatch-b:rgba(140,255,150,.02);
+  --header-bg:rgba(6,8,6,.86);--ring:rgba(184,245,180,.55);--ring-fill:rgba(184,245,180,.06);
+  --d-ink:#b8f5b4;--d-ink2:#9ad69a;--d-ink3:#86c886;--d-ink4:#74b076;--d-mute:#5f9461;
+  --d-line:rgba(140,255,150,.16);--d-line2:rgba(140,255,150,.24);--d-dot:#1f3a20;--dot-idle:rgba(140,255,150,.14);
+  --r:0px;--pill:0px;--ringr:0;
+  --grid:linear-gradient(rgba(140,255,150,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(140,255,150,.045) 1px,transparent 1px);
+  /* Mono runs far wider than the italic serif, so display sizes scale down. */
+  --sans:'Martian Mono',monospace;--mono:'Martian Mono',monospace;--display:'Martian Mono',monospace;--display-style:normal;--ds:.72;
+  --h1:clamp(28px,3.6vw,46px);
+  color-scheme:dark
+}
+html[data-mode=backend] em{font-style:normal}
+html[data-mode=backend] #glowLayer{display:none}
+html[data-mode=backend] .nav{gap:16px !important;font-size:12px !important}
+html[data-mode=frontend] [data-only=backend],html[data-mode=backend] [data-only=frontend]{display:none !important}
+/* Each mode leads with different work; rows carry their position per mode. */
+html[data-mode=frontend] [data-row]{order:var(--o-fe)}
+html[data-mode=backend] [data-row]{order:var(--o-be)}
+/* Backend hierarchy: bright titles, dimmer body set for reading, metadata
+   (tags, years) smallest and dimmest, like terminal output. */
+html[data-mode=backend] [data-row]>div>div:first-child{font-weight:600 !important;color:var(--ink)}
+html[data-mode=backend] [data-row] p,html[data-mode=backend] .career-row p{line-height:1.7 !important;max-width:60ch !important}
+html[data-mode=backend] [data-year],html[data-mode=backend] [data-row]>span{color:var(--faint) !important;font-size:10px !important;text-transform:uppercase;letter-spacing:.045em}
+/* Numbered section markers above each heading, in the dimmest green. */
+html[data-mode=backend] body{counter-reset:sec}
+html[data-mode=backend] section[id] h2::before{counter-increment:sec;content:"── " counter(sec,decimal-leading-zero) " ──────────";display:block;margin-bottom:12px;font:500 10px/1 'Martian Mono',monospace;letter-spacing:.045em;color:var(--faint)}
+/* Off the clock photos go green duotone to sit in the terminal; full colour on hover. */
+html[data-mode=backend] .tile-photo img{filter:grayscale(1) sepia(1) hue-rotate(70deg) saturate(1.4) brightness(.85)}
+html[data-mode=backend] [data-tile]:hover .tile-photo img{filter:none}
+/* Amber is the theme's attention colour, so the primary action uses it. */
+html[data-mode=backend] .cta{background:var(--accent) !important;color:#060806 !important}
+html[data-mode=backend] .cta:hover{background:var(--ink) !important;color:var(--paper) !important}
+html[data-mode=backend] .copy-btn{text-transform:lowercase}
+
+/* Fallback switch (no View Transitions): colours cross-fade instead of snapping. */
+html.mode-anim *,html.mode-anim *::before{transition:background-color .3s ease,color .3s ease,border-color .3s ease !important}
+
+/* The wipe: the new mode is revealed behind a scanline sweeping the viewport.
+   main.js drives the clip and the line; these only switch off the default fade. */
+::view-transition-old(root),::view-transition-new(root){animation-duration:.45s}
+html[data-vt=wipe]::view-transition-old(root),html[data-vt=wipe]::view-transition-new(root),html[data-vt=wipe]::view-transition-group(vi-scan),html[data-vt=wipe]::view-transition-new(vi-scan){animation:none;mix-blend-mode:normal}
+html[data-vt=wipe]::view-transition-old(vi-scan){display:none}
+
+.mode-toggle{display:inline-flex;gap:2px;padding:3px;border-radius:var(--pill);background:var(--card);border:1px var(--ls) var(--line)}
+.mode-toggle button{border:0;border-radius:var(--pill);padding:7px 11px;background:transparent;color:var(--muted);font:500 10.5px/1 var(--mono);letter-spacing:.045em;text-transform:uppercase;cursor:pointer;transition:background .3s ease,color .3s ease}
+.mode-toggle button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.mode-toggle button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* Hover states. Buttons carry their colours inline, so these need !important. */
+.cta,.btn-ghost,.chip-link,.copy-btn{transition:background-color .2s ease,color .2s ease,border-color .2s ease}
+.cta:hover{background:var(--accent) !important;color:#05121c !important}
+.btn-ghost:hover{background:var(--ink) !important;color:var(--paper) !important;border-color:var(--ink) !important}
+.chip-link:hover{border-color:var(--accent) !important;color:var(--ink) !important}
+.mode-toggle button:not([aria-pressed=true]):hover{color:var(--ink);background:var(--line)}
+.copy-btn:hover{border-color:var(--ink)}
+.copy-btn{margin-left:10px;vertical-align:4px;border:1px var(--ls) var(--line);border-radius:var(--pill);background:var(--card);color:var(--muted);padding:6px 10px;font:500 10px/1 var(--mono);letter-spacing:.045em;text-transform:uppercase;cursor:pointer}
+.copy-btn:hover{color:var(--ink)}
+.copy-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mode-float{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:60;box-shadow:0 4px 18px rgba(0,0,0,.12);transition:opacity .28s ease,transform .38s cubic-bezier(.2,.8,.2,1)}
+header.is-visible~.mode-float{opacity:0;transform:translate(-50%,-12px);pointer-events:none;visibility:hidden;transition:opacity .28s ease,transform .38s cubic-bezier(.2,.8,.2,1),visibility 0s .38s}
+
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);background-image:var(--grid);background-size:28px 28px;color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:var(--ink);text-decoration:none}a:hover{color:var(--hov)}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes pulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+
+/* The header keeps out of the hero's way: fixed rather than sticky so it
+   reserves no space at the top, hidden until you scroll past the hero. */
+header{position:fixed !important;top:0;left:0;right:0;transform:translateY(-101%);opacity:0;pointer-events:none;transition:transform .38s cubic-bezier(.2,.8,.2,1),opacity .28s ease}
+header.is-visible{transform:none;opacity:1;pointer-events:auto}
+/* Anchor targets clear the revealed header instead of hiding under it. */
+section[id]{scroll-margin-top:66px}
+/* Career chips jump to their project row, which flashes so the eye lands on it. */
+[data-row]{scroll-margin-top:96px}
+[data-row]:target{animation:row-flash 1.8s ease}
+@keyframes row-flash{0%,35%{background:color-mix(in oklch,var(--accent) 14%,transparent)}100%{background:transparent}}
+
+/* The photo stands on the page with no hatch behind it, so the cut-out reads
+   as a cut-out. Source is already 3:4 with the subject bottom-aligned, and
+   contain guarantees nothing is clipped whatever the box rounds to. */
+.hero-photo{position:relative;aspect-ratio:4/5 !important;background:none !important;border-radius:0 !important;padding-bottom:0 !important}
+.hero-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%}
+/* A wider middle column than the design's 1.05fr — the photo is the anchor here. */
+.hero-grid{grid-template-columns:1fr 1.5fr 1fr !important}
+/* Both modes reserve the frontend title's height (its two lines: --h1 at
+   line-height 1, 4px gap, the display line at .98), so the photo sits at the
+   same place and size whichever mode is on. */
+.hero-title{min-height:calc(clamp(44px,6.6vw,96px) + 4px + clamp(40px,6vw,82px) * .98);display:flex;flex-direction:column;justify-content:center}
+/* She stands directly on the dark section; the hero keeps no bottom padding. */
+#glowHost{padding-bottom:0 !important}
+
+/* whoami.rb syntax colours. Kept near the page's own palette: the accent for
+   keywords, muted grey for comments, and warm tones for literals. */
+.tok-com{color:var(--d-mute);font-style:italic}
+.tok-kw {color:var(--accent)}
+.tok-con{color:#e8c07d}
+.tok-str{color:#a8cc8c}
+.tok-sym{color:#8fd6ea}
+.tok-num{color:#e8c07d}
+.tok-fn {color:#9ecbff}
+
+/* Hover preview: rows carrying data-preview reveal a screenshot over the hatch. */
+/* 2:1 matches the screenshots, so nothing is cropped off the right; anchoring
+   top-left means any overflow falls off the bottom. */
+#preview > div{position:relative;overflow:hidden;aspect-ratio:2/1 !important}
+#previewImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:0 0;opacity:0;transition:opacity .2s ease}
+#previewImg.is-on{opacity:1}
+/* The outgoing shot, held underneath while the next one fades in over it. */
+#previewBack{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:0 0;opacity:0}
+#previewBack.is-on{opacity:1}
+
+/* Responsive — the >960px layout is untouched. Inline styles need !important to override. */
+@media (max-width:960px){
+  .pad{padding-left:22px !important;padding-right:22px !important}
+  .hero-grid{grid-template-columns:1fr !important;gap:14px !important}
+  .hero-photo{max-width:300px;width:100%;margin:0 auto}
+  .about-grid{grid-template-columns:1fr !important;gap:32px !important}
+  .contact-grid{grid-template-columns:1fr !important;gap:28px !important}
+  .career-row{grid-template-columns:1fr !important;gap:10px !important}
+  [data-row]{grid-template-columns:1fr !important;gap:8px !important}
+}
+@media (max-width:640px){
+  .pad{padding-left:16px !important;padding-right:16px !important}
+  /* One row on phones: name and the switch. Section links and the status badge drop out. */
+  .head-inner{gap:8px;flex-wrap:wrap}   /* wraps only on the narrowest phones */
+  .nav>a,.nav>span{display:none !important}
+  .mode-toggle button{padding:7px 8px;letter-spacing:.02em}
+  html[data-mode=backend] .head-inner>span:first-child{font-size:12px !important}   /* the prompt brand runs long in mono */
+  .interests-grid{grid-template-columns:repeat(2,1fr) !important}
+  html[data-mode=backend] .hero-title>div:last-child{font-size:22px !important}   /* keeps "Full Stack Engineer" on one line */
+  .stack-defs{grid-template-columns:1fr !important;gap:0 !important}
+  .stack-defs>span:nth-child(n+3):nth-child(odd){margin-top:10px}
+  section[id],[data-row]{scroll-margin-top:72px}
+}
+/* Touch devices never get a hoverable cursor ring or row preview;
+   work rows show their first screenshot inline instead. */
+.row-thumb{display:none}
+@media (hover:none){
+  #ring,#preview{display:none !important}
+  .row-thumb{display:block;width:100%;aspect-ratio:2/1;object-fit:cover;object-position:0 0;border-radius:var(--r);border:1px var(--ls) var(--line);margin:12px 0 2px;box-sizing:border-box}
+}
+
+/* Off the clock photos sit over the hatch, inside the tile's hover border. */
+.tile-photo{position:relative;overflow:hidden}
+.tile-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .2s ease,filter .35s ease}
