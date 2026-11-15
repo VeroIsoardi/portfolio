@@ -139,6 +139,7 @@ section[id]{scroll-margin-top:66px}
   .contact-grid{grid-template-columns:1fr !important;gap:28px !important}
   .career-row{grid-template-columns:1fr !important;gap:10px !important}
   [data-row]{grid-template-columns:1fr !important;gap:8px !important}
+  .interests-grid{grid-template-columns:repeat(3,1fr) !important}
 }
 @media (max-width:640px){
   .pad{padding-left:16px !important;padding-right:16px !important}
@@ -148,6 +149,7 @@ section[id]{scroll-margin-top:66px}
   .mode-toggle button{padding:7px 8px;letter-spacing:.02em}
   html[data-mode=backend] .head-inner>span:first-child{font-size:12px !important}   /* the prompt brand runs long in mono */
   .interests-grid{grid-template-columns:repeat(2,1fr) !important}
+  .interests-grid>:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - 8px)}   /* odd tile out sits centred */
   html[data-mode=backend] .hero-title>div:last-child{font-size:22px !important}   /* keeps "Full Stack Engineer" on one line */
   .stack-defs{grid-template-columns:1fr !important;gap:0 !important}
   .stack-defs>span:nth-child(n+3):nth-child(odd){margin-top:10px}
